@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command=$(jq -r '.tool_input.command'); if echo \"$command\" | grep -Eq '^[[:space:]]*(git push|rm)([[:space:]]|$)'; then echo 'Bloqueado por hook: no se permite \"git push\" ni \"rm\" en comandos Bash.' >&2; exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

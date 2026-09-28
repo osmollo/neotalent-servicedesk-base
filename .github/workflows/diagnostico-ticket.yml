@@ -1,0 +1,26 @@
+name: Diagnóstico de ticket sin clasificar
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnostico:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ejecutar Claude Code
+        uses: anthropics/claude-code-base-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowedTools "Read,Write,Glob"'
+          prompt: |
+            Lee data/tickets.json, identifica el ticket "Sin clasificar" (categoria
+            o prioridad nula) con la fecha más antigua, y escribe tu diagnóstico
+            en un archivo nuevo dentro de docs/ (nombra el archivo con el id del
+            ticket, por ejemplo docs/diagnostico-<id>.md). El diagnóstico debe
+            explicar por qué no se pudo clasificar automáticamente y proponer una
+            categoría y prioridad razonables a partir del título y la descripción.
