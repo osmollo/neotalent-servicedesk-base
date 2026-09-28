@@ -16,7 +16,8 @@ jobs:
         uses: anthropics/claude-code-base-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--allowedTools "Read,Write,Glob"'
+          model: "claude-sonnet-5"
+          allowed_tools: "Read,Write,Glob"
           prompt: |
             Lee data/tickets.json, identifica el ticket "Sin clasificar" (categoria
             o prioridad nula) con la fecha más antigua, y escribe tu diagnóstico
@@ -24,3 +25,15 @@ jobs:
             ticket, por ejemplo docs/diagnostico-<id>.md). El diagnóstico debe
             explicar por qué no se pudo clasificar automáticamente y proponer una
             categoría y prioridad razonables a partir del título y la descripción.
+
+      - name: Commit del diagnóstico
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          if git diff --cached --quiet; then
+            echo "Sin cambios en docs/, nada que commitear."
+          else
+            git commit -m "Añade diagnóstico automático de ticket sin clasificar"
+            git push
+          fi
